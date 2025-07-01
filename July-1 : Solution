@@ -1,0 +1,25 @@
+3330. Find the Original Typed String I
+solution:
+class Solution:
+    def possibleStringCount(self, word: str) -> int:
+        groups = []
+        n = len(word)
+        i = 0
+        
+        # Step 1: Get consecutive character groups
+        while i < n:
+            j = i
+            while j < n and word[j] == word[i]:
+                j += 1
+            groups.append((word[i], j - i))
+            i = j
+        
+        # Step 2: For each group, consider reducing it (only one time allowed)
+        # We start with the original string itself counted once
+        count = 1
+        for char, length in groups:
+            if length > 1:
+                # We can create (length - 1) new strings by reducing this group
+                count += (length - 1)
+        
+        return count
