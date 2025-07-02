@@ -1,0 +1,40 @@
+3333. Find the Original Typed String II
+Solution:
+from typing import List, Tuple
+from collections import defaultdict
+
+MOD = 10 ** 9 + 7
+
+class Solution:
+    def possibleStringCount(self, word: str, k: int) -> int:
+        # Step 1: Compress the word into groups of (char, freq)
+        groups = []
+        prev = word[0]
+        count = 1
+        for c in word[1:]:
+            if c == prev:
+                count += 1
+            else:
+                groups.append((prev, count))
+                prev = c
+                count = 1
+        groups.append((prev, count))
+
+        # Step 2: DP
+        max_len = min(len(word), 2000)  # Optimization
+        dp = [0] * (max_len + 1)
+        dp[0] = 1  # Base case: 1 way to form empty string
+
+        for ch, freq in groups:
+            new_dp = [0] * (max_len + 1)
+            for l in range(max_len + 1):
+                if dp[l] == 0:
+                    continue
+                for used in range(1, freq + 1):
+                    if l + used <= max_len:
+                        new_dp[l + used] = (new_dp[l + used] + dp[l]) % MOD
+            for i in range(max_len + 1):
+                dp[i] = (dp[i] + new_dp[i]) % MOD
+
+        # Step 3: Return sum of lengths >= k
+        return sum(dp[k:]) % MOD
