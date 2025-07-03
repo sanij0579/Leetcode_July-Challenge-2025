@@ -1,0 +1,23 @@
+3304. Find the K-th Character in String Game I
+Solution:
+class Solution:
+    def kthCharacter(self, k: int) -> str:
+        def dfs(k, level_char):
+            # Base case
+            if k == 1:
+                return level_char
+            
+            # Find the largest power of 2 less than k
+            length = 1
+            while length * 2 < k:
+                length *= 2
+
+            if k <= length:
+                # First half: same as previous level
+                return dfs(k, level_char)
+            else:
+                # Second half: transformed characters
+                original_char = dfs(k - length, level_char)
+                return chr((ord(original_char) - ord('a') + 1) % 26 + ord('a'))
+
+        return dfs(k, 'a')
