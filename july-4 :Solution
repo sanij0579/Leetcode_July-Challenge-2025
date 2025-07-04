@@ -1,0 +1,25 @@
+3307. Find the K-th Character in String Game II
+solution:
+class Solution:
+    def kthCharacter(self, k: int, operations: List[int]) -> str:
+        last_indices = []
+
+        def get_lowest_factor_and_op_idx(k):
+            idx, curr = 0, 1
+            while k > curr:
+                curr *= 2
+                idx += 1
+            return idx, curr
+        
+        while k > 1:
+            last_indices.append(k)
+            _, n = get_lowest_factor_and_op_idx(k)
+            k -= n // 2
+
+        c = 'a'
+        for i in range(len(last_indices) - 1, -1, -1):
+            op_idx, _ = get_lowest_factor_and_op_idx(last_indices[i])
+            if operations[op_idx - 1] == 1:
+                c = chr(ord(c) + 1) if c != 'z' else 'a'
+
+        return c
