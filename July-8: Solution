@@ -1,0 +1,29 @@
+1751. Maximum Number of Events That Can Be Attended II
+Solution:
+from bisect import bisect_right
+from functools import lru_cache
+
+class Solution:
+    def maxValue(self, events: List[List[int]], k: int) -> int:
+        # Sort events by start time
+        events.sort()
+
+        # Extract start times to binary search
+        start_times = [event[0] for event in events]
+
+        @lru_cache(None)
+        def dp(i, remaining):
+            if i == len(events) or remaining == 0:
+                return 0
+            
+            # Option 1: Skip current event
+            ans = dp(i + 1, remaining)
+
+            # Option 2: Take current event
+            end_day = events[i][1]
+            next_index = bisect_right(start_times, end_day)
+            ans = max(ans, events[i][2] + dp(next_index, remaining - 1))
+
+            return ans
+
+        return dp(0, k)
