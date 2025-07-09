@@ -1,0 +1,45 @@
+3439. Reschedule Meetings for Maximum Free Time I
+Solution:
+from typing import List
+
+class Solution:
+    def maxFreeTime(self, eventTime: int, k: int, startTime: List[int], endTime: List[int]) -> int:
+        n = len(startTime)
+        durations = [endTime[i] - startTime[i] for i in range(n)]
+
+        def canAchieve(gap: int) -> bool:
+            # Try to schedule meetings to leave a free window of 'gap'
+            time = 0  # Start from t = 0
+            reschedule = 0
+            for i in range(n):
+                # Schedule each meeting starting at max(current time, after leaving the free gap)
+                if time + gap > eventTime:
+                    return False  # No time for gap
+
+                start = max(time + gap, startTime[i])
+                end = start + durations[i]
+
+                if end > eventTime:
+                    return False
+
+                if start != startTime[i]:
+                    reschedule += 1
+                    if reschedule > k:
+                        return False
+
+                time = end  # Move to next slot
+
+            # If total time + gap fits in event time
+            return True
+
+        # Binary search for maximum gap
+        low, high, ans = 0, eventTime, 0
+        while low <= high:
+            mid = (low + high) // 2
+            if canAchieve(mid):
+                ans = mid
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return ans
