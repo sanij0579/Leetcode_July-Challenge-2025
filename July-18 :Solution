@@ -1,0 +1,53 @@
+2163. Minimum Difference in Sums After Removal of Elements
+Solution:
+class Solution:
+    def minimumDifference(self, nums: List[int]) -> int:
+        
+        # first part can range from index n-1 to 2n-1 (n to 2n elements)
+        # At every point considering the new element from n to 2n-1
+        # make the first part smaller (remove highest element included), 
+        # while making the second part larger (add highest element from excluded sequence)
+        
+        n = len(nums)//3
+
+        first_part, first_sum = SortedList(nums[:n]), sum(nums[:n])
+
+        remaining_elements = sorted(nums[n:])
+
+        to_remove, second_part, second_sum = SortedList(remaining_elements[:n]), SortedList(remaining_elements[n:]), sum(remaining_elements[n:])
+
+        ans = first_sum - second_sum
+
+        for i in range(n, 2*n):
+            
+            # Add the ith element
+            first_part.add(nums[i])
+            first_sum += nums[i]
+            
+            # remove highest
+            first_sum -= first_part[-1]
+            del first_part[-1]
+
+            if to_remove.bisect_left(nums[i]) != len(to_remove):
+                # second sum need not be updated
+                to_remove.remove(nums[i])
+            else:
+                # update second sum
+                second_part.remove(nums[i])
+                second_sum -= nums[i]
+
+                # add new highest from to_remove
+                second_sum += to_remove[-1]
+                second_part.add(to_remove[-1])
+                del to_remove[-1]
+            
+            # take the minimum difference
+            ans = min(ans, first_sum-second_sum)
+        
+        return ans
+            
+
+
+
+
+
