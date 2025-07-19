@@ -1,0 +1,15 @@
+1233. Remove Sub-Folders from the Filesystem
+Solution:
+class Solution:
+    def removeSubfolders(self, folder: List[str]) -> List[str]:
+        folder.sort()  # Lexicographical sorting
+        result = []
+        prev = ""  # Last added parent folder
+
+        for f in folder:
+            # Only add if it's not a subfolder of the previous one
+            if not prev or not f.startswith(prev + '/'):
+                result.append(f)
+                prev = f  # Update the current parent
+
+        return result
