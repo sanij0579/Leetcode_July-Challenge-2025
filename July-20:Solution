@@ -1,0 +1,56 @@
+1948. Delete Duplicate Folders in System
+Solution:
+from collections import defaultdict
+
+class FolderNode:
+    def __init__(self, folder_name):
+        self.folder_name = folder_name
+        self.subfolders = {}  # key: folder_name, value: FolderNode
+        self.structure_signature = ""
+
+class Solution:
+    def deleteDuplicateFolder(self, paths):
+        root = FolderNode("")
+
+        # Build folder tree from paths
+        for folder_path in paths:
+            current_node = root
+            for folder in folder_path:
+                if folder not in current_node.subfolders:
+                    current_node.subfolders[folder] = FolderNode(folder)
+                current_node = current_node.subfolders[folder]
+
+        signature_frequency = defaultdict(int)
+
+        # First DFS to compute unique structure signatures
+        def generate_signature(node):
+            if not node.subfolders:
+                node.structure_signature = ""
+                return ""
+            subfolder_signatures = []
+            for folder_name, subfolder_node in sorted(node.subfolders.items()):
+                signature = generate_signature(subfolder_node)
+                subfolder_signatures.append(f"{folder_name}({signature})")
+            node.structure_signature = "".join(subfolder_signatures)
+            signature_frequency[node.structure_signature] += 1
+            return node.structure_signature
+
+        generate_signature(root)
+
+        result_paths = []
+        current_path = []
+
+        # Second DFS to collect non-duplicate folder paths
+        def collect_unique_paths(node):
+            if node.subfolders and signature_frequency[node.structure_signature] >= 2:
+                return
+            current_path.append(node.folder_name)
+            result_paths.append(current_path.copy())
+            for folder_name, subfolder_node in sorted(node.subfolders.items()):
+                collect_unique_paths(subfolder_node)
+            current_path.pop()
+
+        for folder_name, subfolder_node in sorted(root.subfolders.items()):
+            collect_unique_paths(subfolder_node)
+
+        return result_paths
