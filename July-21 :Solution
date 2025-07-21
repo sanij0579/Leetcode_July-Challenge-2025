@@ -1,0 +1,10 @@
+1957. Delete Characters to Make Fancy String
+Solution:
+class Solution:
+    def makeFancyString(self, s: str) -> str:
+        result = []
+        for ch in s:
+            if len(result) >= 2 and result[-1] == result[-2] == ch:
+                continue  # Skip this character to avoid 3 consecutive same letters
+            result.append(ch)
+        return ''.join(result)
