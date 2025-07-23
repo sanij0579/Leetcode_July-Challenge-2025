@@ -1,0 +1,29 @@
+
+1717. Maximum Score From Removing Substrings
+Solution:
+class Solution:
+    def maximumGain(self, s: str, x: int, y: int) -> int:
+        def remove_substring(s, first, second, score):
+            stack = []
+            total = 0
+            for ch in s:
+                if stack and stack[-1] == first and ch == second:
+                    stack.pop()
+                    total += score
+                else:
+                    stack.append(ch)
+            return ''.join(stack), total
+
+        total_score = 0
+        # Remove the higher value substring first
+        if x > y:
+            # Remove "ab" first
+            s, ab_score = remove_substring(s, 'a', 'b', x)
+            _, ba_score = remove_substring(s, 'b', 'a', y)
+        else:
+            # Remove "ba" first
+            s, ba_score = remove_substring(s, 'b', 'a', y)
+            _, ab_score = remove_substring(s, 'a', 'b', x)
+
+        total_score = ab_score + ba_score
+        return total_score
