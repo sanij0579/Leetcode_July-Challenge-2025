@@ -1,0 +1,53 @@
+2322. Minimum Score After Removals on a Tree
+Solution:
+import collections
+
+class Solution:
+    def minimumScore(self, nums: list[int], edges: list[list[int]]) -> int:
+        n = len(nums)
+        graph = collections.defaultdict(list)
+
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+
+        # Store XOR of subtree rooted at each node
+        xor = [0] * n
+        subtree = [set() for _ in range(n)]
+
+        # DFS to compute xor values and subtree sets
+        def dfs(node, parent):
+            xor[node] = nums[node]
+            subtree[node].add(node)
+
+            for nei in graph[node]:
+                if nei != parent:
+                    dfs(nei, node)
+                    xor[node] ^= xor[nei]
+                    subtree[node].update(subtree[nei])
+
+        dfs(0, -1)
+        total = xor[0]
+        ans = float('inf')
+
+        for i in range(1, n):
+            for j in range(i + 1, n):
+                a, b, c = 0, 0, 0
+
+                if j in subtree[i]:  # j is inside i's subtree
+                    x = xor[j]
+                    y = xor[i] ^ xor[j]
+                    z = total ^ xor[i]
+                elif i in subtree[j]:  # i is inside j's subtree
+                    x = xor[i]
+                    y = xor[j] ^ xor[i]
+                    z = total ^ xor[j]
+                else:  # i and j are in separate branches
+                    x = xor[i]
+                    y = xor[j]
+                    z = total ^ xor[i] ^ xor[j]
+
+                score = max(x, y, z) - min(x, y, z)
+                ans = min(ans, score)
+
+        return ans
