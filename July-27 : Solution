@@ -1,0 +1,19 @@
+3480. Maximize Subarrays After Removing One Conflicting Pair
+Solution:
+class Solution:
+    def maxSubarrays(self, n: int, pairs: List[List[int]]) -> int:
+        adj = [[] for _ in range(n + 1)]
+        for x, y in pairs:
+            adj[max(x, y)].append(min(x, y))
+        
+        result = 0
+        bounds = [0, 0]
+        freq = [0] * (n + 1)
+        
+        for end in range(1, n + 1):
+            for start in adj[end]:
+                bounds = max(bounds, [start, bounds[0]], [bounds[0], start])
+            result += end - bounds[0]
+            freq[bounds[0]] += bounds[0] - bounds[1]
+        
+        return result + max(freq)
