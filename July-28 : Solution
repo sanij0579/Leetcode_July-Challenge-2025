@@ -1,0 +1,27 @@
+2044. Count Number of Maximum Bitwise-OR Subsets 
+Solution:
+class Solution:
+    def countMaxOrSubsets(self, nums: List[int]) -> int:
+        # Step 1: Find maximum OR possible
+        max_or = 0
+        for num in nums:
+            max_or |= num
+
+        n = len(nums)
+        count = 0
+
+        # Step 2: DFS to generate subsets and check OR
+        def dfs(i, curr_or):
+            nonlocal count
+            if i == n:
+                if curr_or == max_or:
+                    count += 1
+                return
+            
+            # Include nums[i]
+            dfs(i + 1, curr_or | nums[i])
+            # Exclude nums[i]
+            dfs(i + 1, curr_or)
+
+        dfs(0, 0)
+        return count
