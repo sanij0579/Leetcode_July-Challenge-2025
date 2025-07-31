@@ -1,0 +1,13 @@
+898. Bitwise ORs of Subarrays
+Solution:
+class Solution:
+    def subarrayBitwiseORs(self, arr: List[int]) -> int:
+        res = set()
+        curr = set()
+
+        for x in arr:
+            # OR current element with all previous subarrays + itself
+            curr = {x} | {y | x for y in curr}
+            res |= curr  # add all to result set
+
+        return len(res)
